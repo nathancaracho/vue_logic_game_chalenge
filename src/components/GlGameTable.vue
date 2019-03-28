@@ -1,11 +1,19 @@
 <template>
   <div class="table__game">
-    <canvas ref="canvas" width="500" height="500"></canvas>
+    <canvas class="canvas" ref="canvas" width="500" height="500"></canvas>
   </div>
 </template>
 <script>
 export default {
   name: "GlGameTable",
+  data() {
+    return {
+      canvas: null,
+      ctx: null,
+      tileSize: null,
+      image: null
+    };
+  },
   props: {
     src: {
       type: String,
@@ -18,14 +26,15 @@ export default {
     sprite: {
       type: Object,
       required: false
+    },
+    matrixSize: {
+      type: Number,
+      required: false,
+      default: 6
     }
   },
-  mounted() {
-    const canvas = this.$refs["canvas"];
-    const ctx = canvas.getContext("2d");
-    const matrixSize = 6;
-    const tileSize = canvas.width / matrixSize;
-    const drawImage = ({
+  methods: {
+    drawImage({
       src,
       srcPosx,
       srcPosY,
@@ -35,8 +44,8 @@ export default {
       y,
       width,
       height
-    }) => {
-      ctx.drawImage(
+    }) {
+      this.ctx.drawImage(
         src,
         srcPosx,
         srcPosY,
@@ -47,53 +56,85 @@ export default {
         width,
         height
       );
-    };
+    },
+    spriteDraw({ image }) {
+      let countFrame = 0;
+      let maxFrame = 0;
+      let sprite = JSON.parse(JSON.stringify(this.sprite));
 
-    const image = new Image();
-    image.src = require(`../assets/${this.src}`);
-    image.addEventListener("load", () => {
-      if (this.tileList) {
-        this.tileList.forEach((colList, col) => {
-          colList.forEach((tile, row) => {
-            tile.src = image;
-            tile.height = tileSize;
-            tile.width = tileSize;
-            tile.y = tileSize * col;
-            tile.x = tileSize * row;
-            drawImage(tile);
-          });
-        });
-      } else if (this.sprite) {
-        let countFrame = 0;
-        let maxFrame = 0;
-        const anim = () => {
-          if (maxFrame < 120) {
-            if (countFrame < this.sprite.spriteCount) countFrame++;
-            else countFrame = 0;
-            maxFrame++;
-            ctx.clearRect(canvas.width, canvas.height, 0, 0);
-            const sprite = JSON.parse(JSON.stringify(this.sprite));
-            sprite.srcPosx = sprite.initialX + tileSize * countFrame;
-            sprite.srcPosY = sprite.initialY;
-            sprite.x = sprite.x * tileSize;
-            sprite.y = sprite.y * tileSize;
-            sprite.height = tileSize;
-            sprite.width = tileSize;
-            sprite.src = image;
+      sprite.x = sprite.x * this.tileSize;
+      sprite.y = sprite.y * this.tileSize;
+      sprite.srcPosx = sprite.initialX;
+      sprite.src = image;
 
-            drawImage(sprite);
-            this.sprite.initialX = sprite.srcPosx;
-            setTimeout(anim(), 1000 / 12);
+      const actions = {
+        walk: ({ direction = "left", nextTile, pixelFrame = 10, _sprite }) => {
+          if (_sprite.x > nextTile * this.tileSize) {
+            switch (direction) {
+              case "left":
+                return { x: (_sprite.x += -pixelFrame) };
+            }
           }
-        };
-        anim();
-      }
-    });
+        }
+      };
+      const anim = () => {
+        if (maxFrame < 10000) {
+          if (countFrame < this.sprite.spriteCount) countFrame++;
+          else {
+            countFrame = 0;
+            sprite.srcPosx = sprite.initialX;
+          }
+          maxFrame++;
+          if (countFrame > 1) sprite.srcPosx += sprite.srcWidth;
+          sprite.srcPosY = sprite.initialY;
+          sprite = Object.assign(
+            sprite,
+            actions.walk({ nextTile: 0, _sprite: sprite })
+          );
+          sprite.height = this.tileSize;
+          sprite.width = this.tileSize;
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+          this.drawImage(sprite);
+          setTimeout(anim, 1000 / 12);
+        }
+      };
+      anim();
+    },
+    backgroundDraw({ image }) {
+      this.tileList.forEach((colList, col) => {
+        colList.forEach((tile, row) => {
+          tile.src = image;
+          tile.height = this.tileSize;
+          tile.width = this.tileSize;
+          tile.y = this.tileSize * col;
+          tile.x = this.tileSize * row;
+          this.drawImage(tile);
+        });
+      });
+    },
+    draw() {
+      const image = new Image();
+      image.src = require(`../assets/${this.src}`);
+      image.addEventListener("load", () => {
+        if (this.tileList) {
+          this.backgroundDraw({ image });
+        } else if (this.sprite) {
+          this.spriteDraw({ image });
+        }
+      });
+    }
+  },
+  mounted() {
+    this.canvas = this.$refs["canvas"];
+    this.ctx = this.canvas.getContext("2d");
+    this.tileSize = this.canvas.width / this.matrixSize;
+
+    this.draw();
   }
 };
 </script>
 <style lang="scss" scoped>
-canvas {
+.canvas {
   position: absolute;
   left: 0;
 }

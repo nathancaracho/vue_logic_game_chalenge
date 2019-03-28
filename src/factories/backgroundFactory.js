@@ -1,5 +1,5 @@
 export default (() => {
-  const tileSize = 32;
+  const tileSize = 30;
   const grass = {
     srcPosx: 107,
     srcPosY: 132,

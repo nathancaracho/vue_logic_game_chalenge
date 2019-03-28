@@ -40,7 +40,7 @@ export default {
   data() {
     return {
       tileList: backgroundFactory.easy(),
-      link: characterFactory.linkLeft()
+      link: characterFactory.linkLeft
     };
   },
   mounted() {
