@@ -1,10 +1,11 @@
 export default (() => {
-  const tileSize = 30;
+  const tileSize = 32;
   const grass = {
     srcPosx: 107,
     srcPosY: 132,
     srcWidth: tileSize,
-    srcHeight: tileSize
+    srcHeight: tileSize,
+    isWalkable: true
   };
   const grassRock = {
     srcPosx: 140,
@@ -26,7 +27,7 @@ export default (() => {
   };
 
   return {
-    easy: () => [
+    easy: [
       [grass, water, water, water, grass, grass],
       [water, water, water, grass, grass, grass],
       [water, grass, water, water, grass, grass],

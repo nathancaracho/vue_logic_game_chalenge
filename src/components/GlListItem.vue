@@ -45,10 +45,12 @@ export default {
 <style lang="scss" scoped>
 .list__item {
   align-self: flex-start;
-  padding: 10px;
+  padding: 6px;
   border-radius: 5px;
   background-color: #009688;
   color: #ffffff;
+  font-weight: bold;
+  font-size: 12px;
   transition: box-shadow transform 0.2s ease-in-out;
   z-index: 999999;
   cursor: no-drop;

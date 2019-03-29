@@ -2,28 +2,39 @@
   <div class="game" @mousemove="mouseMove">
     <div class="table">
       <h2>Tabuleiro</h2>
-      <gl-game-table :tile-list="tileList" :src="'background.png'"></gl-game-table>
-      <gl-game-table :sprite="link" :src="'link.png'"></gl-game-table>
-      <button @click="executeAction" class="btn">Executar</button>
+      <div class="table__canvas">
+        <gl-game-table :tile-list="tileList" :src="'background.png'"></gl-game-table>
+        <gl-game-table :actions="actions" :sprite="link" :src="'link.png'"></gl-game-table>
+      </div>
+      <button @click="executeActions" class="table__btn btn">Executar</button>
     </div>
     <div class="code">
       <div class="code__list">
         <h2>Lista de ações</h2>
         <div class="list">
-          <gl-list-item id="1" action="walk">Andar</gl-list-item>
-          <gl-list-item
-            id="2"
-            action="desabilitado"
-            :draggable="false"
-            background-color="#7986cb"
-          >desabilitado</gl-list-item>
-          <gl-list-item id="3" action="turnLeft">Virar à esquerda</gl-list-item>
+          <div class="list__containter">
+            <gl-list-item
+              v-for="index in 20"
+              :key="index"
+              action="walk"
+              background-color="#7b1fa2"
+            >Andar</gl-list-item>
+          </div>
+          <div class="list__containter">
+            <gl-list-item v-for="index in 20" :key="index" action="turnLeft">Virar à esquerda</gl-list-item>
+          </div>
+          <div class="list__containter">
+            <gl-list-item
+              v-for="index in 20"
+              :key="index"
+              action="turnRight"
+              background-color="#512da8"
+            >Virar à direita</gl-list-item>
+          </div>
         </div>
       </div>
-      <div class="code__workPlace">
-        <h2>Linha do tempo</h2>
-        <gl-list-item id="2" :draggable="false" background-color="#7986cb">Personagem</gl-list-item>
-        <div ref="code__workPlace__line" class="code__workPlace__line"></div>
+      <div class="code__timeline">
+        <gl-time-line/>
       </div>
     </div>
   </div>
@@ -32,26 +43,19 @@
 <script>
 import GlListItem from "../components/GlListItem";
 import GlGameTable from "../components/GlGameTable";
+import GlTimeLine from "../components/GlTimeLine";
 import backgroundFactory from "../factories/backgroundFactory.js";
 import characterFactory from "../factories/characterFactory.js";
 export default {
   name: "home",
-  components: { GlListItem, GlGameTable },
+  components: { GlListItem, GlGameTable, GlTimeLine },
   data() {
     return {
-      tileList: backgroundFactory.easy(),
-      link: characterFactory.linkLeft
+      tileList: backgroundFactory.easy,
+      link: characterFactory.link,
+      actions: ["turnLeft"],
+      repeat: 20
     };
-  },
-  mounted() {
-    const { offsetLeft, offsetTop, offsetHeight } = this.$refs[
-      "code__workPlace__line"
-    ];
-    this.$store.commit("setCodeWorkPlaceLine", {
-      x: offsetLeft,
-      y: offsetTop,
-      height: offsetHeight
-    });
   },
   methods: {
     mouseMove(event) {
@@ -61,25 +65,24 @@ export default {
           clientY: event.pageY
         });
     },
-    executeAction() {
-      // const { x, y, height } = this.$store.state.codeWorkPlaceLine;
-      // this.table = this.$store.state.draggedElementList
-      //   .filter(element => {
-      //     if (
-      //       element.offsetLeft < x &&
-      //       element.offsetLeft + element.offsetWidth > x &&
-      //       element.offsetTop > y &&
-      //       element.offsetTop + element.offsetHeight < y + height
-      //     )
-      //       return element;
-      //   })
-      //   .sort((current, next) => {
-      //     if (current.offsetTop < next.offsetTop) return -1;
-      //     if (current.offsetTop > next.offsetTop) return 1;
-      //     return 0;
-      //   })
-      //   .map(element => element.action);
-      // console.log(this.table[0]);
+    executeActions() {
+      const { x, y, height } = this.$store.state.codeWorkPlaceLine;
+      this.actions = this.$store.state.draggedElementList
+        .filter(element => {
+          if (
+            element.offsetLeft < x &&
+            element.offsetLeft + element.offsetWidth > x &&
+            element.offsetTop > y &&
+            element.offsetTop + element.offsetHeight < y + height
+          )
+            return element;
+        })
+        .sort((current, next) => {
+          if (current.offsetTop < next.offsetTop) return -1;
+          if (current.offsetTop > next.offsetTop) return 1;
+          return 0;
+        })
+        .map(element => element.action);
     }
   }
 };
@@ -95,16 +98,15 @@ export default {
     margin: 15px;
   }
   & > .table {
-    position: relative;
     display: flex;
     flex-direction: column;
-    & > .table--game {
+    height: 600px;
+    width: 500px;
+    & > .table__canvas {
       position: relative;
-      min-width: 500px;
-      min-height: 500px;
     }
-    & > .btn {
-      width: 20%;
+    & > .table__btn {
+      margin-top: auto;
     }
   }
 }
@@ -114,47 +116,15 @@ export default {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
-  }
-  & > &__list {
-    width: 40%;
-  }
-  & > .code__workPlace {
-    width: 60%;
-    display: flex;
-    flex-direction: column;
-    & > * {
-      align-self: center;
-    }
-    & > .code__workPlace__line {
-      position: relative;
-      width: 5px;
-      height: 90%;
-      background-color: #6ea7c6;
-      animation: blink 0.8s infinite;
-      z-index: 0;
-      &:after {
-        content: "";
+    & > .list__containter {
+      min-height: 40px;
+      & > * {
         position: absolute;
-        width: 20px;
-        height: 20px;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #6ea7c6;
-        border-radius: 100%;
-        animation: blink 0.8s infinite;
       }
     }
   }
-}
-
-@keyframes blink {
-  0% {
-    box-shadow: 0px 0px 6px #6ea7c6;
-  }
-
-  100% {
-    box-shadow: 0px 0px 20px #6ea7c6;
+  & > &__list {
+    width: 40%;
   }
 }
 </style>
