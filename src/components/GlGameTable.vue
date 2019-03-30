@@ -80,6 +80,23 @@ export default {
         return list[list.indexOf(direction) + 1] || list[0];
       };
       const clone = obj => JSON.parse(JSON.stringify(obj));
+
+      const applyRules = sprite => {
+        let cloneSprite = clone(sprite);
+        const maxSize = this.tileSize * (this.matrixSize - 1);
+
+        const outOfBound = sprite => {
+          if (sprite.x < 0) cloneSprite.x = 0;
+          else if (sprite.x > maxSize) cloneSprite.x = maxSize;
+          else if (sprite.y < 0) cloneSprite.y = 0;
+          else if (sprite.y > maxSize) {
+            cloneSprite.y = maxSize;
+          }
+        };
+        outOfBound(cloneSprite);
+        return cloneSprite;
+      };
+
       const walk = (sprite, pixelFrame = 83) => {
         const walkByDirection = {
           left: { x: sprite.x - pixelFrame },
@@ -87,7 +104,9 @@ export default {
           right: { x: sprite.x + pixelFrame },
           bottom: { y: sprite.y + pixelFrame }
         };
-        return Object.assign(clone(sprite), walkByDirection[sprite.direction]);
+        return applyRules(
+          Object.assign(clone(sprite), walkByDirection[sprite.direction])
+        );
       };
 
       const anim = async () => {
