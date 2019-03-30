@@ -27,7 +27,7 @@ export default (() => {
   };
   const linkBottom = {
     initialX: 10,
-    initialY: 44,
+    initialY: 75,
     srcWidth: tileSize,
     srcHeight: tileSize,
     direction: "bottom",

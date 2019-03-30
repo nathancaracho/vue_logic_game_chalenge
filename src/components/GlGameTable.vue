@@ -75,6 +75,7 @@ export default {
       let maxFrame = 0;
       let actions = this.actions;
       let sprite = null;
+      let callNextAction = false;
 
       const getDirection = ({ list, direction }) => {
         return list[list.indexOf(direction) + 1] || list[0];
@@ -102,7 +103,6 @@ export default {
             sprite.x = oldSprite.x;
             sprite.y = oldSprite.y;
           }
-          console.log(sprite);
           return sprite;
         };
         cloneSprite = outOfBound(cloneSprite);
@@ -110,24 +110,27 @@ export default {
         return cloneSprite;
       };
 
-      const walk = (sprite, pixelFrame = 83) => {
+      const walk = (sprite, pixelFrame = this.tileSize / 8) => {
         const walkByDirection = {
           left: { x: sprite.x - pixelFrame },
           top: { y: sprite.y - pixelFrame },
           right: { x: sprite.x + pixelFrame },
           bottom: { y: sprite.y + pixelFrame }
         };
-        return applyRules(
-          Object.assign(clone(sprite), walkByDirection[sprite.direction]),
-          sprite
+        const position = walkByDirection[sprite.direction];
+
+        callNextAction = !Number(
+          (position[Object.getOwnPropertyNames(position)[0]] / this.tileSize)
+            .toFixed(2)
+            .split(".")[1]
         );
+        return applyRules(Object.assign(clone(sprite), position), sprite);
       };
 
       const anim = async () => {
         if (maxFrame < 1000) {
-          if (countFrame < this.sprite.spriteCount) countFrame++;
+          if (sprite && countFrame < sprite.spriteCount) countFrame++;
           else countFrame = 0;
-
           if (countFrame > 1) sprite.srcPosx += sprite.srcWidth;
           maxFrame++;
           if (!sprite) {
@@ -144,6 +147,7 @@ export default {
             };
             switch (actions[0]) {
               case "turnLeft":
+                callNextAction = true;
                 sprite = getSprite(
                   this.sprite[
                     getDirection({
@@ -154,6 +158,7 @@ export default {
                 );
                 break;
               case "turnRight":
+                callNextAction = true;
                 sprite = getSprite(
                   this.sprite[
                     getDirection({
@@ -168,11 +173,14 @@ export default {
                 sprite = walk(sprite);
                 break;
             }
-            sprite.srcPosx = sprite.initialX;
+            if (callNextAction || !sprite.srcPosx)
+              sprite.srcPosx = sprite.initialX;
+            else
+              sprite.srcPosx = sprite.initialX + sprite.srcWidth * countFrame;
             sprite.srcPosY = sprite.initialY;
-
-            actions = actions.slice(1);
+            if (callNextAction) actions = actions.slice(1);
           }
+
           sprite.src = image;
           sprite.height = this.tileSize;
           sprite.width = this.tileSize;

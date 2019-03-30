@@ -28,7 +28,7 @@ export default (() => {
 
   return {
     easy: [
-      [grass, water, water, water, grass, grass],
+      [grass, water, grassRock, water, grass, grass],
       [water, water, water, grass, grass, grass],
       [water, grass, water, water, grass, grass],
       [water, grass, water, grass, grassWood, grass],
