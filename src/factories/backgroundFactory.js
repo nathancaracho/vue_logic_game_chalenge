@@ -33,7 +33,7 @@ export default (() => {
       [water, grass, water, water, grass, grass],
       [water, grass, water, grass, grassWood, grass],
       [water, grass, grass, water, grass, grass],
-      [water, grass, grass, grass, grass, grassRock]
+      [water, grass, grass, grass, grass, grass]
     ]
   };
 })();

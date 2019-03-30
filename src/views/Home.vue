@@ -4,7 +4,7 @@
       <h2>Tabuleiro</h2>
       <div class="table__canvas">
         <gl-game-table :tile-list="tileList" :src="'background.png'"></gl-game-table>
-        <gl-game-table :actions="actions" :sprite="link" :src="'link.png'"></gl-game-table>
+        <gl-game-table :tile-list="tileList" :actions="actions" :sprite="link" :src="'link.png'"></gl-game-table>
       </div>
       <button @click="executeActions" class="table__btn btn">Executar</button>
     </div>

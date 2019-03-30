@@ -81,19 +81,32 @@ export default {
       };
       const clone = obj => JSON.parse(JSON.stringify(obj));
 
-      const applyRules = sprite => {
-        let cloneSprite = clone(sprite);
+      const applyRules = (sprite, oldSprite) => {
         const maxSize = this.tileSize * (this.matrixSize - 1);
+        let cloneSprite = clone(sprite);
 
         const outOfBound = sprite => {
-          if (sprite.x < 0) cloneSprite.x = 0;
-          else if (sprite.x > maxSize) cloneSprite.x = maxSize;
-          else if (sprite.y < 0) cloneSprite.y = 0;
+          if (sprite.x < 0) sprite.x = 0;
+          else if (sprite.x > maxSize) sprite.x = maxSize;
+          else if (sprite.y < 0) sprite.y = 0;
           else if (sprite.y > maxSize) {
-            cloneSprite.y = maxSize;
+            sprite.y = maxSize;
           }
+          return sprite;
         };
-        outOfBound(cloneSprite);
+
+        const walkableTile = (sprite, oldSprite) => {
+          const x = Math.floor(sprite.x / this.tileSize);
+          const y = Math.floor(sprite.y / this.tileSize);
+          if (!this.tileList[y][x].isWalkable) {
+            sprite.x = oldSprite.x;
+            sprite.y = oldSprite.y;
+          }
+          console.log(sprite);
+          return sprite;
+        };
+        cloneSprite = outOfBound(cloneSprite);
+        cloneSprite = walkableTile(cloneSprite, oldSprite);
         return cloneSprite;
       };
 
@@ -105,7 +118,8 @@ export default {
           bottom: { y: sprite.y + pixelFrame }
         };
         return applyRules(
-          Object.assign(clone(sprite), walkByDirection[sprite.direction])
+          Object.assign(clone(sprite), walkByDirection[sprite.direction]),
+          sprite
         );
       };
 
