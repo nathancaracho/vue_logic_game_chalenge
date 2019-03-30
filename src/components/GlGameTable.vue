@@ -11,8 +11,7 @@ export default {
       canvas: null,
       ctx: null,
       tileSize: null,
-      image: null,
-      actionList: null
+      image: null
     };
   },
   props: {
@@ -44,9 +43,6 @@ export default {
     }
   },
   methods: {
-    clone(obj) {
-      return JSON.parse(JSON.stringify(obj));
-    },
     drawImage({
       src,
       srcPosx,
@@ -77,59 +73,79 @@ export default {
       const directionList = ["left", "top", "right", "bottom"];
       let countFrame = 0;
       let maxFrame = 0;
-      let direction = directionList[0];
-      let position = { x: 0, y: 0 };
+      let actions = this.actions;
+      let sprite = null;
 
-      this.actionList = this.actions;
-
-      const getDirection = list =>
-        (direction = list[list.indexOf(direction) + 1] || list[0]);
-      const actions = {
-        walk(position) {
-          const pixelFrame = 83;
-          const walkByDirection = {
-            left: { x: position.x - pixelFrame },
-            top: { y: position.y - pixelFrame },
-            right: { x: position.x + pixelFrame },
-            bottom: { y: position.y + pixelFrame }
-          };
-          return Object.assign(position, walkByDirection[direction]);
-        },
-        turnLeft() {
-          getDirection(directionList.reverse());
-        },
-        turnRight() {
-          getDirection(directionList);
-        }
+      const getDirection = ({ list, direction }) => {
+        return list[list.indexOf(direction) + 1] || list[0];
       };
-      const anim = async () => {
-        let sprite = {};
+      const clone = obj => JSON.parse(JSON.stringify(obj));
+      const walk = (sprite, pixelFrame = 83) => {
+        const walkByDirection = {
+          left: { x: sprite.x - pixelFrame },
+          top: { y: sprite.y - pixelFrame },
+          right: { x: sprite.x + pixelFrame },
+          bottom: { y: sprite.y + pixelFrame }
+        };
+        return Object.assign(clone(sprite), walkByDirection[sprite.direction]);
+      };
 
-        if (maxFrame < 30) {
+      const anim = async () => {
+        if (maxFrame < 1000) {
           if (countFrame < this.sprite.spriteCount) countFrame++;
           else countFrame = 0;
 
           if (countFrame > 1) sprite.srcPosx += sprite.srcWidth;
           maxFrame++;
+          if (!sprite) {
+            sprite = this.sprite[this.sprite.startOn];
+            sprite.x = this.sprite.x * this.tileSize;
+            sprite.y = this.sprite.y * this.tileSize;
+            sprite.srcPosx = sprite.initialX;
+            sprite.srcPosY = sprite.initialY;
+          } else {
+            const getSprite = newSprite => {
+              delete newSprite.x;
+              delete newSprite.y;
+              return Object.assign(clone(sprite), clone(newSprite));
+            };
+            switch (actions[0]) {
+              case "turnLeft":
+                sprite = getSprite(
+                  this.sprite[
+                    getDirection({
+                      list: directionList,
+                      direction: sprite.direction
+                    })
+                  ]
+                );
+                break;
+              case "turnRight":
+                sprite = getSprite(
+                  this.sprite[
+                    getDirection({
+                      list: clone(directionList).reverse(),
+                      direction: sprite.direction
+                    })
+                  ]
+                );
 
-          position = actions[this.actionList[0]](position) || position;
+                break;
+              case "walk":
+                sprite = walk(sprite);
+                break;
+            }
+            sprite.srcPosx = sprite.initialX;
+            sprite.srcPosY = sprite.initialY;
 
-          sprite = Object.assign(this.clone(this.sprite[direction]), position);
-          console.log(position, direction);
+            actions = actions.slice(1);
+          }
           sprite.src = image;
-          sprite.srcPosx = sprite.initialX;
-          sprite.srcPosY = sprite.initialY;
-
-          sprite = Object.assign(sprite, position);
-
-          this.actionList = this.actionList.slice(1);
-
           sprite.height = this.tileSize;
           sprite.width = this.tileSize;
-
           this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
           await this.drawImage(sprite);
-          if (this.actionList.length) setTimeout(anim, 1000 / 12);
+          if (actions.length) setTimeout(anim, 1000 / 12);
         }
       };
       anim();
@@ -150,11 +166,8 @@ export default {
       const image = new Image();
       image.src = require(`../assets/${this.src}`);
       image.addEventListener("load", () => {
-        if (this.tileList) {
-          this.backgroundDraw({ image });
-        } else if (this.sprite) {
-          this.spriteDraw({ image });
-        }
+        if (this.sprite) this.spriteDraw({ image });
+        else if (this.tileList) this.backgroundDraw({ image });
       });
     }
   },

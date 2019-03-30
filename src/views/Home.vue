@@ -53,7 +53,7 @@ export default {
     return {
       tileList: backgroundFactory.easy,
       link: characterFactory.link,
-      actions: ["turnLeft"],
+      actions: [],
       repeat: 20
     };
   },
