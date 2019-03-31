@@ -28,12 +28,12 @@ export default (() => {
 
   return {
     easy: [
-      [grass, water, grassRock, water, grass, grass],
-      [water, water, water, grass, grass, grass],
-      [water, grass, water, water, grass, grass],
-      [water, grass, water, grass, grassWood, grass],
-      [water, grass, grass, water, grass, grass],
-      [water, grass, grass, grass, grass, grass]
+      [grass, grass, grassWood, grass, grassRock, grassWood],
+      [water, grass, grass, grass, grass, water],
+      [water, water, water, grass, water, water],
+      [water, water, water, grass, water, water],
+      [water, grassWood, grassRock, grass, water, grassWood],
+      [water, water, grass, grass, grass, grass]
     ]
   };
 })();
