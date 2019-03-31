@@ -3,8 +3,8 @@
     <div class="table">
       <h2>Tabuleiro</h2>
       <div class="table__canvas">
-        <gl-game-table :tile-list="tileList" :src="'background.png'"></gl-game-table>
-        <gl-game-table :tile-list="tileList" :actions="actions" :sprite="link" :src="'link.png'"></gl-game-table>
+        <gl-background :tile-list="tileList" :src="'background.png'"/>
+        <gl-character :tile-list="tileList" :actions="actions" :sprite="link" :src="'link.png'"/>
       </div>
       <button @click="executeActions" class="table__btn btn">Executar</button>
     </div>
@@ -42,13 +42,15 @@
 
 <script>
 import GlListItem from "../components/GlListItem";
-import GlGameTable from "../components/GlGameTable";
+// import GlGameTable from "../components/GlGameTable";
+import GlBackground from "../components/GlBackground";
+import GlCharacter from "../components/GlCharacter";
 import GlTimeLine from "../components/GlTimeLine";
 import backgroundFactory from "../factories/backgroundFactory.js";
 import characterFactory from "../factories/characterFactory.js";
 export default {
   name: "home",
-  components: { GlListItem, GlGameTable, GlTimeLine },
+  components: { GlListItem, GlTimeLine, GlBackground, GlCharacter },
   data() {
     return {
       tileList: backgroundFactory.easy,
