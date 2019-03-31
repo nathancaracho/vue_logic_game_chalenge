@@ -4,7 +4,15 @@
       <h2>Tabuleiro</h2>
       <div class="table__canvas">
         <gl-background :tile-list="tileList" :src="'background.png'"/>
-        <gl-character :tile-list="tileList" :actions="actions" :sprite="link" :src="'link.png'"/>
+        <gl-itens :sprite="item" :src="'link.png'"/>
+        <gl-character
+          :target="item"
+          :tile-list="tileList"
+          :actions="actions"
+          :sprite="link"
+          :src="'link.png'"
+          @onFinish="onFinish"
+        />
       </div>
       <button @click="executeActions" class="table__btn btn">Executar</button>
     </div>
@@ -43,18 +51,21 @@
 <script>
 import GlListItem from "../components/GlListItem";
 // import GlGameTable from "../components/GlGameTable";
-import GlBackground from "../components/GlBackground";
-import GlCharacter from "../components/GlCharacter";
+import GlBackground from "../components/canvas/GlBackground";
+import GlCharacter from "../components/canvas/GlCharacter";
+import GlItens from "../components/canvas/GlItens";
 import GlTimeLine from "../components/GlTimeLine";
 import backgroundFactory from "../factories/backgroundFactory.js";
 import characterFactory from "../factories/characterFactory.js";
+import itemFactory from "../factories/itemFactory.js";
 export default {
   name: "home",
-  components: { GlListItem, GlTimeLine, GlBackground, GlCharacter },
+  components: { GlListItem, GlTimeLine, GlBackground, GlCharacter, GlItens },
   data() {
     return {
       tileList: backgroundFactory.easy,
       link: characterFactory.link,
+      item: itemFactory.redRupee,
       actions: [],
       repeat: 20
     };
@@ -66,6 +77,9 @@ export default {
           clientX: event.x,
           clientY: event.pageY
         });
+    },
+    onFinish() {
+      alert("ae caraiu");
     },
     executeActions() {
       const { x, y, height } = this.$store.state.codeWorkPlaceLine;

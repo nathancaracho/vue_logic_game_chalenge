@@ -29,11 +29,7 @@ export default {
       default: 6
     }
   },
-  watch: {
-    actions() {
-      this.draw();
-    }
-  },
+  
   methods: {
     drawImage({
       src,

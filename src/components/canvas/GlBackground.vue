@@ -6,7 +6,7 @@ export default {
   methods: {
     draw() {
       const image = new Image();
-      image.src = require(`../assets/${this.src}`);
+      image.src = require(`../../assets/${this.src}`);
       image.addEventListener("load", () => {
         if (this.tileList) this.backgroundDraw({ image });
       });

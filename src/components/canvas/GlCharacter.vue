@@ -12,12 +12,21 @@ export default {
     actions: {
       type: Array,
       required: true
+    },
+    target: {
+      type: Object,
+      required: false
+    }
+  },
+  watch: {
+    actions() {
+      this.draw();
     }
   },
   methods: {
     draw() {
       const image = new Image();
-      image.src = require(`../assets/${this.src}`);
+      image.src = require(`../../assets/${this.src}`);
       image.addEventListener("load", () => {
         if (this.sprite) this.spriteDraw({ image });
       });
@@ -56,21 +65,33 @@ export default {
         };
 
         const walkableTile = (sprite, oldSprite) => {
-          const number = value => Number(value.toFixed(2));
-          const x = Math.floor(number(sprite.x) / number(this.tileSize));
-          const y = Math.floor(number(sprite.y) / number(this.tileSize));
+          const x = Math.round(sprite.x / this.tileSize);
+          const y = Math.round(sprite.y / this.tileSize);
           if (!this.tileList[y][x].isWalkable) {
             sprite.x = oldSprite.x;
             sprite.y = oldSprite.y;
+            sprite.callNextAction = true;
           }
           return sprite;
         };
+        const isTarget = (sprite, target = this.target) => {
+          const getTile = value => Math.round(value / this.tileSize);
+          return (
+            getTile(sprite.x) == getTile(target.x) &&
+            getTile(sprite.y) == getTile(target.y)
+          );
+        };
+
         cloneSprite = outOfBound(cloneSprite);
         cloneSprite = walkableTile(cloneSprite, oldSprite);
+        if (isTarget(sprite)) {
+          cloneSprite.callNextAction = true;
+          this.$emit("onFinish");
+        }
         return cloneSprite;
       };
 
-      const walk = (sprite, pixelFrame = this.tileSize / 8) => {
+      const walk = (sprite, pixelFrame = this.tileSize / 5) => {
         const walkByDirection = {
           left: { x: sprite.x - pixelFrame },
           top: { y: sprite.y - pixelFrame },
@@ -84,6 +105,7 @@ export default {
             .toFixed(2)
             .split(".")[1]
         );
+
         return applyRules(Object.assign(clone(sprite), position), sprite);
       };
 
@@ -132,6 +154,7 @@ export default {
                 sprite = walk(sprite);
                 break;
             }
+
             if (sprite.callNextAction || !sprite.srcPosx)
               sprite.srcPosx = sprite.initialX;
             else
