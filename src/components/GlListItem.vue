@@ -52,7 +52,7 @@ export default {
   font-weight: bold;
   font-size: 12px;
   transition: box-shadow transform 0.2s ease-in-out;
-  z-index: 999999;
+  z-index: 99;
   cursor: no-drop;
   &--draggable {
     cursor: grab;

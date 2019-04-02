@@ -1,5 +1,6 @@
 <template>
   <div class="game" @mousemove="mouseMove">
+    <gl-modal :show="isShowModal"></gl-modal>
     <div class="table">
       <h2>Tabuleiro</h2>
       <div class="table__canvas">
@@ -50,6 +51,7 @@
 
 <script>
 import GlListItem from "../components/GlListItem";
+import GlModal from "../components/GlModal";
 // import GlGameTable from "../components/GlGameTable";
 import GlBackground from "../components/canvas/GlBackground";
 import GlCharacter from "../components/canvas/GlCharacter";
@@ -60,14 +62,21 @@ import characterFactory from "../factories/characterFactory.js";
 import itemFactory from "../factories/itemFactory.js";
 export default {
   name: "home",
-  components: { GlListItem, GlTimeLine, GlBackground, GlCharacter, GlItens },
+  components: {
+    GlListItem,
+    GlTimeLine,
+    GlBackground,
+    GlCharacter,
+    GlItens,
+    GlModal
+  },
   data() {
     return {
       tileList: backgroundFactory.easy,
       link: characterFactory.link,
       item: itemFactory.redRupee,
       actions: [],
-      repeat: 20
+      isShowModal: false
     };
   },
   methods: {
@@ -79,7 +88,7 @@ export default {
         });
     },
     onFinish() {
-      alert("ae caraiu");
+      this.isShowModal = true;
     },
     executeActions() {
       const { x, y, height } = this.$store.state.codeWorkPlaceLine;

@@ -18,12 +18,24 @@ export default {
       });
     },
     drawSprite({ image }) {
-      this.sprite.src = image;
-      this.sprite.height = this.tileSize;
-      this.sprite.width = this.tileSize;
-      this.sprite.x = this.sprite.x * this.tileSize;
-      this.sprite.y = this.sprite.y * this.tileSize;
-      this.drawImage(this.sprite);
+      let frame = 0;
+      this.sprite.frameCount = 0;
+      const anim = () => {
+        if (this.sprite.frameCount == this.sprite.maxFrameCount - 1)
+          this.sprite.frameCount = 0;
+        else this.sprite.frameCount++;
+        this.sprite.src = image;
+        this.sprite.height = this.tileSize;
+        this.sprite.width = this.tileSize;
+        this.sprite.srcPosx =
+          this.sprite.initialX + this.sprite.srcWidth * this.sprite.frameCount;
+        this.sprite.x = this.sprite.x * this.tileSize;
+        this.sprite.y = this.sprite.y * this.tileSize;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.drawImage(this.sprite);
+        setTimeout(anim, 1000 / 12);
+      };
+      anim();
     }
   }
 };
