@@ -37,13 +37,14 @@ export default {
       let maxFrame = 0;
       let actions = this.actions;
       let sprite = null;
+      let animationSprite = null;
 
       const getDirection = ({ list, direction }) => {
         return list[list.indexOf(direction) + 1] || list[0];
       };
       const clone = obj => JSON.parse(JSON.stringify(obj));
 
-      const applyRules = (sprite, oldSprite) => {
+      const applyRules = sprite => {
         const maxSize = this.tileSize * (this.matrixSize - 1);
         let cloneSprite = clone(sprite);
 
@@ -64,13 +65,18 @@ export default {
           return sprite;
         };
 
-        const walkableTile = (sprite, oldSprite) => {
+        const walkableTile = sprite => {
           const x = Math.round(sprite.x / this.tileSize);
           const y = Math.round(sprite.y / this.tileSize);
           if (!this.tileList[y][x].isWalkable) {
-            sprite.x = oldSprite.x;
-            sprite.y = oldSprite.y;
-            sprite.callNextAction = true;
+            animationSprite = this.sprite.animation[
+              this.tileList[y][x].animation
+            ][sprite.direction];
+            if (animationSprite) actions = ["animation"];
+
+            animationSprite.x = sprite.x;
+            animationSprite.y = sprite.y;
+            sprite.callNextAction = false;
           }
           return sprite;
         };
@@ -83,7 +89,7 @@ export default {
         };
 
         cloneSprite = outOfBound(cloneSprite);
-        cloneSprite = walkableTile(cloneSprite, oldSprite);
+        cloneSprite = walkableTile(cloneSprite);
         if (isTarget(sprite)) {
           cloneSprite.callNextAction = true;
           this.$emit("onFinish");
@@ -153,9 +159,14 @@ export default {
               case "walk":
                 sprite = walk(sprite);
                 break;
+              case "animation":
+                sprite = clone(animationSprite);
+                if (countFrame == sprite.spriteCount)
+                  sprite.callNextAction = true;
+                break;
             }
 
-            if (sprite.callNextAction || !sprite.srcPosx)
+            if (sprite.callNextAction && !animationSprite)
               sprite.srcPosx = sprite.initialX;
             else
               sprite.srcPosx = sprite.initialX + sprite.srcWidth * countFrame;

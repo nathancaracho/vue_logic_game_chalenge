@@ -33,12 +33,50 @@ export default (() => {
     direction: "bottom",
     spriteCount
   };
+
+  const swimmingLeft = {
+    initialX: 342,
+    initialY: 2935,
+    srcWidth: tileSize,
+    srcHeight: tileSize,
+    spriteCount: 7
+  };
+  const swimmingTop = {
+    initialX: 10,
+    initialY: 2974,
+    srcWidth: tileSize,
+    srcHeight: tileSize,
+    spriteCount: 7
+  };
+
+  const swimmingBottom = {
+    initialX: 566,
+    initialY: 2974,
+    srcWidth: tileSize,
+    srcHeight: tileSize,
+    spriteCount: 7
+  };
+  const swimmingRight = {
+    initialX: 286,
+    initialY: 2974,
+    srcWidth: tileSize,
+    srcHeight: tileSize,
+    spriteCount: 7
+  };
   return {
     link: {
       left: linkLeft,
       right: linkRight,
       top: linkTop,
       bottom: linkBottom,
+      animation: {
+        swimming: {
+          left: swimmingLeft,
+          top: swimmingTop,
+          right: swimmingRight,
+          bottom: swimmingBottom
+        }
+      },
       startOn: "left",
       x: 5,
       y: 5

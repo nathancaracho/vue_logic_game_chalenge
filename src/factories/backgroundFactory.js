@@ -18,7 +18,7 @@ export default (() => {
     srcPosY: 231,
     srcWidth: tileSize,
     srcHeight: tileSize,
-    animation: "water"
+    animation: "swimming"
   };
   const grassWood = {
     srcPosx: 140,
