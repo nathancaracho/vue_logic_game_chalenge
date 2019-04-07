@@ -1,0 +1,21 @@
+.button {
+  min-height: 50px;
+  border-radius: 5px;
+  border: none;
+  background-color: #42b983;
+  color: #fff;
+  font-weight: bold;
+  outline: none;
+  margin-top: auto;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: box-shadow 0.3s ease-in-out, color 0.3s ease-in-out;
+  &:active {
+    box-shadow: none;
+  }
+  &:disabled {
+    box-shadow: none;
+    background: #86d2b0;
+    cursor: no-drop;
+  }
+}

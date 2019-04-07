@@ -11,7 +11,8 @@ export default (() => {
     srcPosx: 140,
     srcPosY: 165,
     srcWidth: tileSize,
-    srcHeight: tileSize
+    srcHeight: tileSize,
+    animation: "roll"
   };
   const water = {
     srcPosx: 371,
@@ -24,7 +25,8 @@ export default (() => {
     srcPosx: 140,
     srcPosY: 231,
     srcWidth: tileSize,
-    srcHeight: tileSize
+    srcHeight: tileSize,
+    animation: "roll"
   };
 
   return {

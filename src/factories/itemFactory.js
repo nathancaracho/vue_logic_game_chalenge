@@ -8,7 +8,8 @@ export default (() => {
     srcHeight: tileSize,
     x: 0,
     y: 0,
-    maxFrameCount: 3
+    maxFrameCount: 3,
+    shadow: {}
   };
 
   return {

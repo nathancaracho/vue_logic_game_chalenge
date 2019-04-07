@@ -1,7 +1,10 @@
 <template>
   <div class="modal" :class="show?'modal--active':''">
     <div class="modal__header">
-      <h3>parabéns você conseguiu.</h3>
+      <h3>
+        <v-icon class="header__brand__logo__icon_cube" name="grin-squint"/>&nbsp;parabéns você conseguiu.
+        <v-icon class="header__brand__logo__icon_cube" name="grin-squint"/>
+      </h3>
     </div>
     <div class="modal__body">
       <h3>Muito Obrigado por Jogar</h3>
@@ -11,6 +14,8 @@
   </div>
 </template>
 <script>
+import "vue-awesome/icons/grin-squint";
+
 export default {
   name: "GlModal",
   props: {
@@ -27,13 +32,15 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+@import "../assets/style/components/button.scss";
+@import "../assets/style/utils/display.scss";
+
 .body__child {
   align-self: center;
 }
 .modal {
   position: absolute;
-  display: flex;
-  flex-direction: column;
+  @extend .flex--column;
   width: 400px;
   height: 300px;
   background-color: #fff;
@@ -47,22 +54,32 @@ export default {
   & > * {
     padding: 15px;
   }
-  & > .modal__body {
+  & > .modal__header {
     display: flex;
-    flex-direction: column;
+    border-bottom: 1px dashed #000;
+    & > h3 {
+      margin: 0 auto;
+    }
+  }
+  & > .modal__body {
+    @extend .flex--column;
+    height: 70%;
     & > .modal__body_rupee {
       @extend .body__child;
       width: 50px;
+      margin: 0 auto;
     }
     & > .modal__body_button {
       @extend .body__child;
-      width: 100px;
+      @extend .button;
+      margin-top: auto;
     }
   }
   &.modal--active {
     transform: translate(-50%, -100%);
     opacity: 1;
   }
+
 }
 </style>
 

@@ -1,13 +1,15 @@
 export default (() => {
   const tileSize = 32;
   const spriteCount = 9;
+  const shadow = true;
   const linkLeft = {
     initialX: 344,
     initialY: 75,
     srcWidth: tileSize,
     srcHeight: tileSize,
     direction: "left",
-    spriteCount
+    spriteCount,
+    shadow
   };
   const linkRight = {
     initialX: 474,
@@ -15,7 +17,8 @@ export default (() => {
     srcWidth: tileSize,
     srcHeight: tileSize,
     direction: "right",
-    spriteCount
+    spriteCount,
+    shadow
   };
   const linkTop = {
     initialX: 674,
@@ -23,7 +26,8 @@ export default (() => {
     srcWidth: tileSize,
     srcHeight: tileSize,
     direction: "top",
-    spriteCount
+    spriteCount,
+    shadow
   };
   const linkBottom = {
     initialX: 10,
@@ -31,7 +35,8 @@ export default (() => {
     srcWidth: tileSize,
     srcHeight: tileSize,
     direction: "bottom",
-    spriteCount
+    spriteCount,
+    shadow
   };
 
   const swimmingLeft = {
@@ -54,6 +59,7 @@ export default (() => {
     initialY: 2974,
     srcWidth: tileSize,
     srcHeight: tileSize,
+    y: -1,
     spriteCount: 7
   };
   const swimmingRight = {
@@ -62,6 +68,40 @@ export default (() => {
     srcWidth: tileSize,
     srcHeight: tileSize,
     spriteCount: 7
+  };
+  const rollLeft = {
+    initialX: 284,
+    initialY: 1104,
+    srcWidth: tileSize,
+    srcHeight: tileSize,
+    x: 1,
+    spriteCount: 6,
+    shadow
+  };
+  const rollTop = {
+    initialX: 530,
+    initialY: 1096,
+    srcWidth: tileSize,
+    srcHeight: tileSize,
+    y: 1,
+    spriteCount: 6,
+    shadow
+  };
+  const rollRight = {
+    initialX: 460,
+    initialY: 1134,
+    srcWidth: tileSize,
+    srcHeight: tileSize,
+    spriteCount: 6,
+    shadow
+  };
+  const rollBottom = {
+    initialX: 14,
+    initialY: 1100,
+    srcWidth: tileSize,
+    srcHeight: tileSize,
+    spriteCount: 6,
+    shadow
   };
   return {
     link: {
@@ -75,6 +115,12 @@ export default (() => {
           top: swimmingTop,
           right: swimmingRight,
           bottom: swimmingBottom
+        },
+        roll: {
+          left: rollLeft,
+          top: rollTop,
+          right: rollRight,
+          bottom: rollBottom
         }
       },
       startOn: "left",

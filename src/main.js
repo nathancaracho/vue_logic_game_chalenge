@@ -3,6 +3,9 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 
+import Icon from "vue-awesome/components/Icon";
+Vue.component("v-icon", Icon);
+
 Vue.config.productionTip = false;
 Vue.use("game", {
   loop() {

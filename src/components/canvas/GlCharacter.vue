@@ -32,17 +32,18 @@ export default {
       });
     },
     spriteDraw({ image }) {
+      const clone = obj => JSON.parse(JSON.stringify(obj));
+
       const directionList = ["left", "top", "right", "bottom"];
       let countFrame = 0;
       let maxFrame = 0;
-      let actions = this.actions;
+      let actions = clone(this.actions);
       let sprite = null;
       let animationSprite = null;
 
       const getDirection = ({ list, direction }) => {
         return list[list.indexOf(direction) + 1] || list[0];
       };
-      const clone = obj => JSON.parse(JSON.stringify(obj));
 
       const applyRules = sprite => {
         const maxSize = this.tileSize * (this.matrixSize - 1);
@@ -69,13 +70,18 @@ export default {
           const x = Math.round(sprite.x / this.tileSize);
           const y = Math.round(sprite.y / this.tileSize);
           if (!this.tileList[y][x].isWalkable) {
-            animationSprite = this.sprite.animation[
-              this.tileList[y][x].animation
-            ][sprite.direction];
-            if (animationSprite) actions = ["animation"];
+            animationSprite = clone(
+              this.sprite.animation[this.tileList[y][x].animation][
+                sprite.direction
+              ]
+            );
+            if (animationSprite) {
+              actions = ["animation"];
+              countFrame = 0;
+            }
 
-            animationSprite.x = sprite.x;
-            animationSprite.y = sprite.y;
+            animationSprite.x = ((animationSprite.x || 0) + x) * this.tileSize;
+            animationSprite.y = ((animationSprite.y || 0) + y) * this.tileSize;
             sprite.callNextAction = false;
           }
           return sprite;
@@ -139,7 +145,7 @@ export default {
                 sprite = getSprite(
                   this.sprite[
                     getDirection({
-                      list: directionList,
+                      list: clone(directionList).reverse(),
                       direction: sprite.direction
                     })
                   ]
@@ -149,7 +155,7 @@ export default {
                 sprite = getSprite(
                   this.sprite[
                     getDirection({
-                      list: clone(directionList).reverse(),
+                      list: directionList,
                       direction: sprite.direction
                     })
                   ]
@@ -178,8 +184,10 @@ export default {
           sprite.height = this.tileSize;
           sprite.width = this.tileSize;
           this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
           await this.drawImage(sprite);
           if (actions.length) setTimeout(anim, 1000 / 12);
+          else this.$emit("onAbleExecute");
         }
       };
       anim();

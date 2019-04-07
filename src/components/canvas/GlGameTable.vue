@@ -29,7 +29,7 @@ export default {
       default: 6
     }
   },
-  
+
   methods: {
     drawImage({
       src,
@@ -40,7 +40,8 @@ export default {
       x,
       y,
       width,
-      height
+      height,
+      shadow
     }) {
       new Promise(resolve => {
         this.ctx.drawImage(
@@ -54,6 +55,22 @@ export default {
           width,
           height
         );
+        if (shadow) {
+          this.ctx.beginPath();
+          this.ctx.ellipse(
+            x + this.tileSize * 0.55,
+            y + this.tileSize * 0.75,
+            10,
+            15,
+            55,
+            Math.PI * 2,
+            1,
+            Math.PI * 2
+          );
+          this.ctx.fillStyle = "#00000055";
+          this.ctx.fill();
+          this.ctx.closePath();
+        }
         resolve();
       });
     }
