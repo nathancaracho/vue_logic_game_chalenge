@@ -18,7 +18,6 @@ export default {
       });
     },
     drawSprite({ image }) {
-      let frame = 0;
       this.sprite.frameCount = 0;
       const anim = () => {
         if (this.sprite.frameCount == this.sprite.maxFrameCount - 1)
